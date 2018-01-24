@@ -30,9 +30,9 @@ after_build:
     if ($env:configuration -ne "Release") {
       Get-Item build/ethminer-*-Windows.* | Rename-Item -NewName { $_.name -Replace 'ethminer','ethminer-dbg' }
     }
-    if (-not $env:appveyor_pull_request_number) {
-      cmake --build build --target hunter_upload_cache
-    }
+#    if (-not $env:appveyor_pull_request_number) {
+#      cmake --build build --target hunter_upload_cache
+#    }
 
 artifacts:
   - path: build/ethminer-*.zip
