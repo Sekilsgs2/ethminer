@@ -218,6 +218,7 @@ static void keccak_f1600_no_absorb(uint2* a, uint out_size, uint isolate)
 
 	
 	//uint o = 25;
+	/*
 	for (uint r = 0; r < 24;)
 	{
 		// This dynamic branch stops the AMD compiler unrolling the loop
@@ -232,7 +233,37 @@ static void keccak_f1600_no_absorb(uint2* a, uint out_size, uint isolate)
 			keccak_f1600_round(a, r++);
 			//if (r == 23) o = out_size;
 		}
-	} 
+	}
+	*/
+	if (isolate)
+		{
+			keccak_f1600_round(a, 1);
+			keccak_f1600_round(a, 2);
+			keccak_f1600_round(a, 3);
+			keccak_f1600_round(a, 4);
+			keccak_f1600_round(a, 5);
+			keccak_f1600_round(a, 6);
+			keccak_f1600_round(a, 7);
+			keccak_f1600_round(a, 8);
+			keccak_f1600_round(a, 9);
+			keccak_f1600_round(a, 10);
+			keccak_f1600_round(a, 11);
+			keccak_f1600_round(a, 12);
+			keccak_f1600_round(a, 13);
+			keccak_f1600_round(a, 14);
+			keccak_f1600_round(a, 15);
+			keccak_f1600_round(a, 16);
+			keccak_f1600_round(a, 17);
+			keccak_f1600_round(a, 18);
+			keccak_f1600_round(a, 19);
+			keccak_f1600_round(a, 20);
+			keccak_f1600_round(a, 21);
+			keccak_f1600_round(a, 22);
+			keccak_f1600_round(a, 23);
+			keccak_f1600_round(a, 24);
+			keccak_f1600_round(a, 25);
+			//if (r == 23) o = out_size;
+		}
 	
 
 	// final round optimised for digest size
