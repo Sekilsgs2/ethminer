@@ -21,7 +21,7 @@ install: | # Download CUDA Windows installer (local) and extract /compiler/* to 
   nvcc -V
   pip install requests
 before_build:
-  - cmake -G "Visual Studio 14 2015 Win64" -H. -Bbuild -DETHASHCUDA=ON -DAPICORE=ON
+  - cmake -G "Visual Studio 14 2015 Win64" -H. -Bbuild -DAPICORE=ON
 build_script:
   - cmake --build build --config %CONFIGURATION%
 after_build:
