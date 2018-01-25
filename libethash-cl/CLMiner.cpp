@@ -298,6 +298,7 @@ void CLMiner::workLoop()
 	WorkPackage current;
 	current.header = h256{1u};
 	current.seed = h256{1u};
+	uint64_t nonce = 0;
 
 	try {
 		while (true)
@@ -343,15 +344,15 @@ void CLMiner::workLoop()
 				m_searchKernel.setArg(4, target);
 
 				// FIXME: This logic should be move out of here.
-				if (w.exSizeBits >= 0)
-					startNonce = w.startNonce | ((uint64_t)index << (64 - 4 - w.exSizeBits)); // This can support up to 16 devices.
-				else
+				//if (w.exSizeBits >= 0)
+				//	startNonce = w.startNonce | ((uint64_t)index << (64 - 4 - w.exSizeBits)); // This can support up to 16 devices.
+				//else
 					startNonce = randomNonce();
 
 				auto switchEnd = std::chrono::high_resolution_clock::now();
 				auto globalSwitchTime = std::chrono::duration_cast<std::chrono::milliseconds>(switchEnd - workSwitchStart).count();
 				auto localSwitchTime = std::chrono::duration_cast<std::chrono::microseconds>(switchEnd - localSwitchStart).count();
-				cllog << "Switch time" << globalSwitchTime << "ms /" << localSwitchTime << "us";
+				//cllog << "Switch time" << globalSwitchTime << "ms /" << localSwitchTime << "us";
 			}
 
 			// Read results.
@@ -359,7 +360,7 @@ void CLMiner::workLoop()
 			uint32_t results[c_maxSearchResults + 1];
 			m_queue.enqueueReadBuffer(m_searchBuffer, CL_TRUE, 0, sizeof(results), &results);
 
-			uint64_t nonce = 0;
+			nonce = 0;
 			if (results[0] > 0)
 			{
 				// Ignore results except the first one.
@@ -370,7 +371,7 @@ void CLMiner::workLoop()
 
 			// Run the kernel.
 			m_searchKernel.setArg(3, startNonce);
-			m_queue.enqueueNDRangeKernel(m_searchKernel, cl::NullRange, m_globalWorkSize, m_workgroupSize);
+			m_queue.enqueueNDRangeKernel(m_searchKernel, cl::NullRange, m_globalWorkSize+1, m_workgroupSize);
 
 			// Report results while the kernel is running.
 			// It takes some time because ethash must be re-evaluated on CPU.
