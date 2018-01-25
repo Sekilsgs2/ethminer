@@ -371,11 +371,11 @@ void CLMiner::workLoop()
 
 			// Run the kernel.
 			m_searchKernel.setArg(3, startNonce);
-			m_queue.enqueueNDRangeKernel(m_searchKernel, cl::NullRange, m_globalWorkSize+1, m_workgroupSize);
+			m_queue.enqueueNDRangeKernel(m_searchKernel, cl::NullRange, m_globalWorkSize, m_workgroupSize);
 
 			// Report results while the kernel is running.
 			// It takes some time because ethash must be re-evaluated on CPU.
-			if (nonce != 0)
+			//if (nonce != 0)
 				report(nonce, current);
 
 			current = w;        // kernel now processing newest work
