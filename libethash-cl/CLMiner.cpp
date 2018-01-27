@@ -361,13 +361,13 @@ void CLMiner::workLoop()
 			m_queue.enqueueReadBuffer(m_searchBuffer, CL_TRUE, 0, sizeof(results), &results);
 
 			nonce = 0;
-			if (results[0] > 0)
-			{
+			//if (results[0] > 0)
+			//{
 				// Ignore results except the first one.
 				nonce = current.startNonce + results[1];
 				// Reset search buffer if any solution found.
 				m_queue.enqueueWriteBuffer(m_searchBuffer, CL_FALSE, 0, sizeof(c_zero), &c_zero);
-			}
+			//}
 
 			// Run the kernel.
 			m_searchKernel.setArg(3, startNonce);
@@ -375,7 +375,7 @@ void CLMiner::workLoop()
 
 			// Report results while the kernel is running.
 			// It takes some time because ethash must be re-evaluated on CPU.
-			//if (nonce != 0)
+			if (nonce != 0)
 				report(nonce, current);
 
 			current = w;        // kernel now processing newest work
