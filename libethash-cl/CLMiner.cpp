@@ -275,7 +275,7 @@ void CLMiner::report(uint64_t _nonce, WorkPackage const& _w)
 	//else {
 	//	farm.failedSolution();
 	//	cwarn << "FAILURE: GPU gave incorrect result!";
-	}
+	//}
 }
 
 namespace
