@@ -270,12 +270,14 @@ void CLMiner::report(uint64_t _nonce, WorkPackage const& _w)
 	assert(_nonce != 0);
 	// TODO: Why re-evaluating?
 	Result r = EthashAux::eval(_w.seed, _w.header, _nonce);
-	//if (r.value < _w.boundary)
+	cwarn << "r.value" << r.value << "w.seed" << _w.seed << "w.header" << _w.header << "nonce" << _nonce << "w.boundary" << _w.boundary;
+	cwarn << "r.mixHash" << r.mixHash;
+	if (r.value < _w.boundary)
 		farm.submitProof(Solution{_nonce, r.mixHash, _w.header, _w.seed, _w.boundary, _w.job, _w.job_len, false});
-	//else {
-	//	farm.failedSolution();
-	//	cwarn << "FAILURE: GPU gave incorrect result!";
-	//}
+	else {
+		farm.failedSolution();
+		cwarn << "FAILURE: GPU gave incorrect result!";
+	}
 }
 
 namespace
