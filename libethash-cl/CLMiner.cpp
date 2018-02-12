@@ -339,7 +339,7 @@ void CLMiner::workLoop()
 				const uint64_t target = (uint64_t)(u64)((u256)w.boundary >> 192);
 				assert(target > 0);
 				
-				cllog << "target=" << target
+				cllog << "target=" << target;
 
 				// Update header constant buffer.
 				m_queue.enqueueWriteBuffer(m_header, CL_FALSE, 0, w.header.size, w.header.data());
@@ -370,12 +370,12 @@ void CLMiner::workLoop()
 			{
 				// Ignore results except the first one.
 				nonce = current.startNonce + results[1];
-				cllog << "nonce=" << nonce
+				cllog << "nonce=" << nonce;
 				// Reset search buffer if any solution found.
 				m_queue.enqueueWriteBuffer(m_searchBuffer, CL_FALSE, 0, sizeof(c_zero), &c_zero);
 			}
 			
-			cllog << "globalWorkSize=" << m_globalWorkSize << "m_workgroupSize=" << m_workgroupSize
+			cllog << "globalWorkSize=" << m_globalWorkSize << "m_workgroupSize=" << m_workgroupSize;
 			// Run the kernel.
 			m_searchKernel.setArg(3, startNonce);
 			m_queue.enqueueNDRangeKernel(m_searchKernel, cl::NullRange, m_globalWorkSize, m_workgroupSize);
