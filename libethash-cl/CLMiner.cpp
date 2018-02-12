@@ -338,6 +338,8 @@ void CLMiner::workLoop()
 				// Upper 64 bits of the boundary.
 				const uint64_t target = (uint64_t)(u64)((u256)w.boundary >> 192);
 				assert(target > 0);
+				
+				cllog << "target=" << target
 
 				// Update header constant buffer.
 				m_queue.enqueueWriteBuffer(m_header, CL_FALSE, 0, w.header.size, w.header.data());
