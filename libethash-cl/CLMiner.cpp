@@ -355,7 +355,7 @@ void CLMiner::workLoop()
 				auto switchEnd = std::chrono::high_resolution_clock::now();
 				auto globalSwitchTime = std::chrono::duration_cast<std::chrono::milliseconds>(switchEnd - workSwitchStart).count();
 				auto localSwitchTime = std::chrono::duration_cast<std::chrono::microseconds>(switchEnd - localSwitchStart).count();
-				//cllog << "Switch time" << globalSwitchTime << "ms /" << localSwitchTime << "us";
+				cllog << "Switch time" << globalSwitchTime << "ms /" << localSwitchTime << "us";
 			}
 
 			// Read results.
@@ -364,14 +364,16 @@ void CLMiner::workLoop()
 			m_queue.enqueueReadBuffer(m_searchBuffer, CL_TRUE, 0, sizeof(results), &results);
 
 			nonce = 0;
-			//if (results[0] > 0)
-			//{
+			if (results[0] > 0)
+			{
 				// Ignore results except the first one.
 				nonce = current.startNonce + results[1];
+				cllog << "nonce=" << nonce
 				// Reset search buffer if any solution found.
 				m_queue.enqueueWriteBuffer(m_searchBuffer, CL_FALSE, 0, sizeof(c_zero), &c_zero);
-			//}
-
+			}
+			
+			cllog << "globalWorkSize=" << m_globalWorkSize << "m_workgroupSize=" << m_workgroupSize
 			// Run the kernel.
 			m_searchKernel.setArg(3, startNonce);
 			m_queue.enqueueNDRangeKernel(m_searchKernel, cl::NullRange, m_globalWorkSize, m_workgroupSize);
