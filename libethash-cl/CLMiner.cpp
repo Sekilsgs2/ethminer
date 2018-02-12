@@ -272,7 +272,7 @@ void CLMiner::report(uint64_t _nonce, WorkPackage const& _w)
 	Result r = EthashAux::eval(_w.seed, _w.header, _nonce);
 	cwarn << "r.value" << r.value << "w.seed" << _w.seed << "w.header" << _w.header << "nonce" << _nonce << "w.boundary" << _w.boundary;
 	cwarn << "r.mixHash" << r.mixHash;
-	r.value = 1;
+	//r.value = 1;
 	if (r.value < _w.boundary)
 		farm.submitProof(Solution{_nonce, r.mixHash, _w.header, _w.seed, _w.boundary, _w.job, _w.job_len, false});
 	else {
