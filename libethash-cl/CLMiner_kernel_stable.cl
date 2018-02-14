@@ -156,7 +156,7 @@ static void keccak_f1600_round(uint2* a, uint r)
 	u = t[1] ^ ROL2(t[3], 1);
 	//a[2] ^= u;
 	//a[7] ^= u;
-	*/
+	
 	a[12] ^= u;
 	/*
 	a[17] ^= u;
