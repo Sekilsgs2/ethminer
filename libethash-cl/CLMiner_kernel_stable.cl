@@ -118,10 +118,10 @@ static uint2 ROL2(const uint2 v, const int n)
 static void chi(uint2 * a, const uint n, const uint2 * t)
 {
 	a[n+0] = bitselect(t[n + 0] ^ t[n + 2], t[n + 0], t[n + 1]);
-	a[n+1] = bitselect(t[n + 1] ^ t[n + 3], t[n + 1], t[n + 2]);
-	a[n+2] = bitselect(t[n + 2] ^ t[n + 4], t[n + 2], t[n + 3]);
-	a[n+3] = bitselect(t[n + 3] ^ t[n + 0], t[n + 3], t[n + 4]);
-	a[n+4] = bitselect(t[n + 4] ^ t[n + 1], t[n + 4], t[n + 0]);
+	//a[n+1] = bitselect(t[n + 1] ^ t[n + 3], t[n + 1], t[n + 2]);
+	//a[n+2] = bitselect(t[n + 2] ^ t[n + 4], t[n + 2], t[n + 3]);
+	//a[n+3] = bitselect(t[n + 3] ^ t[n + 0], t[n + 3], t[n + 4]);
+	//a[n+4] = bitselect(t[n + 4] ^ t[n + 1], t[n + 4], t[n + 0]);
 }
 
 static void keccak_f1600_round(uint2* a, uint r)
@@ -133,24 +133,30 @@ static void keccak_f1600_round(uint2* a, uint r)
 	t[0] = a[0] ^ a[5] ^ a[10] ^ a[15] ^ a[20];
 	t[1] = a[1] ^ a[6] ^ a[11] ^ a[16] ^ a[21];
 	t[2] = a[2] ^ a[7] ^ a[12] ^ a[17] ^ a[22];
-	t[3] = a[3] ^ a[8] ^ a[13] ^ a[18] ^ a[23];
+	//t[3] = a[3] ^ a[8] ^ a[13] ^ a[18] ^ a[23];
 	t[4] = a[4] ^ a[9] ^ a[14] ^ a[19] ^ a[24];
 	u = t[4] ^ ROL2(t[1], 1);
+	
 	a[0] ^= u;
+	/*
 	a[5] ^= u;
 	a[10] ^= u;
 	a[15] ^= u;
 	a[20] ^= u;
 	u = t[0] ^ ROL2(t[2], 1);
 	a[1] ^= u;
+	*/
 	a[6] ^= u;
+	/*
 	a[11] ^= u;
 	a[16] ^= u;
 	a[21] ^= u;
 	u = t[1] ^ ROL2(t[3], 1);
 	a[2] ^= u;
 	a[7] ^= u;
+	*/
 	a[12] ^= u;
+	/*
 	a[17] ^= u;
 	a[22] ^= u;
 	u = t[2] ^ ROL2(t[4], 1);
@@ -167,22 +173,29 @@ static void keccak_f1600_round(uint2* a, uint r)
 	a[24] ^= u;
 
 	// Rho Pi
-
+	*/
 	t[0]  = a[0];
+	/*
 	t[10] = ROL2(a[1], 1);
 	t[20] = ROL2(a[2], 62);
 	t[5]  = ROL2(a[3], 28);
 	t[15] = ROL2(a[4], 27);
 	
 	t[16] = ROL2(a[5], 36);
+	*/
+	
 	t[1]  = ROL2(a[6], 44);
+	/*
 	t[11] = ROL2(a[7], 6);
 	t[21] = ROL2(a[8], 55);
 	t[6]  = ROL2(a[9], 20);
 	
 	t[7]  = ROL2(a[10], 3);
 	t[17] = ROL2(a[11], 10);
+	*/
+	
 	t[2]  = ROL2(a[12], 43);
+	/*
 	t[12] = ROL2(a[13], 25);
 	t[22] = ROL2(a[14], 39);
 	
@@ -197,17 +210,17 @@ static void keccak_f1600_round(uint2* a, uint r)
 	t[9]  = ROL2(a[22], 61);
 	t[19] = ROL2(a[23], 56);
 	t[4]  = ROL2(a[24], 14);
-
+	*/
 	// Chi
 	chi(a, 0, t);
 
 	// Iota
 	a[0] ^= Keccak_f1600_RC[r];
 
-	chi(a, 5, t);
-	chi(a, 10, t);
-	chi(a, 15, t);
-	chi(a, 20, t);
+	//chi(a, 5, t);
+	//chi(a, 10, t);
+	//chi(a, 15, t);
+	//chi(a, 20, t);
 }
 
 static void keccak_f1600_no_absorb(uint2* a, uint out_size, uint isolate)
@@ -218,7 +231,6 @@ static void keccak_f1600_no_absorb(uint2* a, uint out_size, uint isolate)
 
 	
 	//uint o = 25;
-	/*
 	for (uint r = 0; r < 24;)
 	{
 		// This dynamic branch stops the AMD compiler unrolling the loop
@@ -233,37 +245,7 @@ static void keccak_f1600_no_absorb(uint2* a, uint out_size, uint isolate)
 			keccak_f1600_round(a, r++);
 			//if (r == 23) o = out_size;
 		}
-	}
-	*/
-	if (isolate)
-		{
-			keccak_f1600_round(a, 1);
-			keccak_f1600_round(a, 2);
-			keccak_f1600_round(a, 3);
-			keccak_f1600_round(a, 4);
-			keccak_f1600_round(a, 5);
-			keccak_f1600_round(a, 6);
-			keccak_f1600_round(a, 7);
-			keccak_f1600_round(a, 8);
-			keccak_f1600_round(a, 9);
-			keccak_f1600_round(a, 10);
-			keccak_f1600_round(a, 11);
-			keccak_f1600_round(a, 12);
-			keccak_f1600_round(a, 13);
-			keccak_f1600_round(a, 14);
-			keccak_f1600_round(a, 15);
-			keccak_f1600_round(a, 16);
-			keccak_f1600_round(a, 17);
-			keccak_f1600_round(a, 18);
-			keccak_f1600_round(a, 19);
-			keccak_f1600_round(a, 20);
-			keccak_f1600_round(a, 21);
-			keccak_f1600_round(a, 22);
-			keccak_f1600_round(a, 23);
-			keccak_f1600_round(a, 24);
-			keccak_f1600_round(a, 25);
-			//if (r == 23) o = out_size;
-		}
+	} 
 	
 
 	// final round optimised for digest size
