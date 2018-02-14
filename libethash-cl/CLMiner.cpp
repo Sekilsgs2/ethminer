@@ -270,9 +270,6 @@ void CLMiner::report(uint64_t _nonce, WorkPackage const& _w)
 	assert(_nonce != 0);
 	// TODO: Why re-evaluating?
 	Result r = EthashAux::eval(_w.seed, _w.header, _nonce);
-	cwarn << "r.value" << r.value << "w.seed" << _w.seed << "w.header" << _w.header << "nonce" << _nonce << "w.boundary" << _w.boundary;
-	cwarn << "r.mixHash" << r.mixHash;
-	//r.value = 1;
 	if (r.value < _w.boundary)
 		farm.submitProof(Solution{_nonce, r.mixHash, _w.header, _w.seed, _w.boundary, _w.job, _w.job_len, false});
 	else {
@@ -301,7 +298,6 @@ void CLMiner::workLoop()
 	WorkPackage current;
 	current.header = h256{1u};
 	current.seed = h256{1u};
-	uint64_t nonce = 0;
 
 	try {
 		while (true)
@@ -338,8 +334,6 @@ void CLMiner::workLoop()
 				// Upper 64 bits of the boundary.
 				const uint64_t target = (uint64_t)(u64)((u256)w.boundary >> 192);
 				assert(target > 0);
-				
-				cllog << "target=" << target;
 
 				// Update header constant buffer.
 				m_queue.enqueueWriteBuffer(m_header, CL_FALSE, 0, w.header.size, w.header.data());
@@ -349,9 +343,9 @@ void CLMiner::workLoop()
 				m_searchKernel.setArg(4, target);
 
 				// FIXME: This logic should be move out of here.
-				//if (w.exSizeBits >= 0)
-				//	startNonce = w.startNonce | ((uint64_t)index << (64 - 4 - w.exSizeBits)); // This can support up to 16 devices.
-				//else
+				if (w.exSizeBits >= 0)
+					startNonce = w.startNonce | ((uint64_t)index << (64 - 4 - w.exSizeBits)); // This can support up to 16 devices.
+				else
 					startNonce = randomNonce();
 
 				auto switchEnd = std::chrono::high_resolution_clock::now();
@@ -365,17 +359,15 @@ void CLMiner::workLoop()
 			uint32_t results[c_maxSearchResults + 1];
 			m_queue.enqueueReadBuffer(m_searchBuffer, CL_TRUE, 0, sizeof(results), &results);
 
-			nonce = 0;
+			uint64_t nonce = 0;
 			if (results[0] > 0)
 			{
 				// Ignore results except the first one.
 				nonce = current.startNonce + results[1];
-				cllog << "nonce=" << nonce;
 				// Reset search buffer if any solution found.
 				m_queue.enqueueWriteBuffer(m_searchBuffer, CL_FALSE, 0, sizeof(c_zero), &c_zero);
 			}
-			
-			cllog << "globalWorkSize=" << m_globalWorkSize << "m_workgroupSize=" << m_workgroupSize;
+
 			// Run the kernel.
 			m_searchKernel.setArg(3, startNonce);
 			m_queue.enqueueNDRangeKernel(m_searchKernel, cl::NullRange, m_globalWorkSize, m_workgroupSize);
